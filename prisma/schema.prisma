@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  accounts      Account[]
+  sessions      Session[]
+  trips         Trip[]
+  searches      SearchHistory[]
+  preferences   UserPreference?
+  bookings      Booking[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model UserPreference {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  preferredCurrency String   @default("USD")
+  preferredLanguage String   @default("en")
+  seatPreference    String?
+  mealPreference    String?
+  budgetLevel       String   @default("moderate")
+  travelStyle       String[] @default([])
+  interests         String[] @default([])
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Trip {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  destination String
+  startDate   DateTime
+  endDate     DateTime
+  budget      Float?
+  status      String   @default("planning")
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itinerary   Itinerary[]
+  bookings    Booking[]
+  
+  @@index([userId])
+}
+
+model Itinerary {
+  id          String   @id @default(cuid())
+  tripId      String
+  day         Int
+  activities  Json
+  notes       String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  
+  @@index([tripId])
+}
+
+model Booking {
+  id              String   @id @default(cuid())
+  userId          String
+  tripId          String?
+  type            String
+  bookingRef      String
+  providerName    String
+  providerData    Json
+  totalPrice      Float
+  currency        String
+  status          String   @default("confirmed")
+  bookedAt        DateTime @default(now())
+  startDate       DateTime
+  endDate         DateTime?
+  
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip Trip? @relation(fields: [tripId], references: [id], onDelete: SetNull)
+  
+  @@index([userId])
+  @@index([tripId])
+}
+
+model SearchHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  searchType  String
+  query       Json
+  results     Json?
+  createdAt   DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  userId    String
+  messages  Json[]
+  metadata  Json?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  
+  @@index([userId])
+}
