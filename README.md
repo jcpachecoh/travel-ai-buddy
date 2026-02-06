@@ -87,6 +87,9 @@ This will start:
 - PostgreSQL database on port 5432
 - pgAdmin on port 5050
 
+> ⚠️ **Security Note**: The docker-compose.yml contains default credentials for local development. 
+> For production, use environment variables or Docker secrets to manage sensitive credentials.
+
 5. **Generate Prisma Client**
 
 ```bash

@@ -18,7 +18,8 @@ export default function TripsPage() {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Mock user ID for demo purposes
+  // TODO: Replace with actual authenticated user ID from NextAuth session
+  // This is a placeholder for demo purposes
   const userId = 'demo-user-id';
 
   useEffect(() => {

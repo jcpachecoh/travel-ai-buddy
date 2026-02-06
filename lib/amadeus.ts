@@ -5,12 +5,16 @@ export class AmadeusService {
   private accessToken: string | null = null;
 
   async authenticate() {
+    if (!process.env.AMADEUS_API_KEY || !process.env.AMADEUS_API_SECRET) {
+      throw new Error('AMADEUS_API_KEY and AMADEUS_API_SECRET environment variables must be set');
+    }
+    
     const response = await axios.post(
       'https://test.api.amadeus.com/v1/security/oauth2/token',
       new URLSearchParams({
         grant_type: 'client_credentials',
-        client_id: process.env.AMADEUS_API_KEY!,
-        client_secret: process.env.AMADEUS_API_SECRET!,
+        client_id: process.env.AMADEUS_API_KEY,
+        client_secret: process.env.AMADEUS_API_SECRET,
       }),
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     );
