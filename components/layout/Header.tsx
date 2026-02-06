@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Plane, MessageSquare, Hotel, MapPin, User } from 'lucide-react';
+import { Plane, MessageSquare, Hotel, MapPin, User, Briefcase } from 'lucide-react';
 
 export default function Header() {
   return (
@@ -25,6 +25,10 @@ export default function Header() {
             <Link href="/trips" className="flex items-center gap-2 hover:text-blue-200">
               <MapPin className="w-5 h-5" />
               <span>My Trips</span>
+            </Link>
+            <Link href="/bookings" className="flex items-center gap-2 hover:text-blue-200">
+              <Briefcase className="w-5 h-5" />
+              <span>Bookings</span>
             </Link>
             <Link href="/chat" className="flex items-center gap-2 hover:text-blue-200">
               <MessageSquare className="w-5 h-5" />
