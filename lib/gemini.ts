@@ -1,13 +1,16 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-if (!process.env.GOOGLE_GEMINI_API_KEY) {
-  throw new Error('GOOGLE_GEMINI_API_KEY environment variable is not set');
+function getGenAI() {
+  if (!process.env.GOOGLE_GEMINI_API_KEY) {
+    throw new Error('GOOGLE_GEMINI_API_KEY environment variable is not set');
+  }
+  return new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 }
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
-
 export class GeminiService {
-  private model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+  private getModel() {
+    return getGenAI().getGenerativeModel({ model: 'gemini-pro' });
+  }
 
   async generateTravelRecommendations(params: {
     destination: string;
@@ -30,7 +33,7 @@ export class GeminiService {
     
     Format response as JSON.`;
 
-    const result = await this.model.generateContent(prompt);
+    const result = await this.getModel().generateContent(prompt);
     return result.response.text();
   }
 
@@ -61,12 +64,12 @@ export class GeminiService {
     
     Format response as JSON array with one object per day.`;
     
-    const result = await this.model.generateContent(prompt);
+    const result = await this.getModel().generateContent(prompt);
     return result.response.text();
   }
 
   async chatWithAI(message: string, context: any) {
-    const chat = this.model.startChat({
+    const chat = this.getModel().startChat({
       history: context.history || [],
     });
 
@@ -75,7 +78,7 @@ export class GeminiService {
   }
 
   async analyzeTravelImage(imageData: string) {
-    const visionModel = genAI.getGenerativeModel({ model: 'gemini-pro-vision' });
+    const visionModel = getGenAI().getGenerativeModel({ model: 'gemini-pro-vision' });
     const result = await visionModel.generateContent([
       'Identify this location and provide travel information',
       { inlineData: { data: imageData, mimeType: 'image/jpeg' } }
