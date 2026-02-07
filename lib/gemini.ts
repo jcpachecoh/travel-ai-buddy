@@ -8,8 +8,13 @@ function getGenAI() {
 }
 
 export class GeminiService {
+  private model?: ReturnType<GoogleGenerativeAI['getGenerativeModel']>;
+  
   private getModel() {
-    return getGenAI().getGenerativeModel({ model: 'gemini-pro' });
+    if (!this.model) {
+      this.model = getGenAI().getGenerativeModel({ model: 'gemini-pro' });
+    }
+    return this.model;
   }
 
   async generateTravelRecommendations(params: {
